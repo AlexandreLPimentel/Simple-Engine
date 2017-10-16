@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{faad40ab-33dd-46c4-91ba-cf1cd77e4e87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\util">
+      <UniqueIdentifier>{5249b66f-5b94-4bfd-9f16-696ce6e59257}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\util\vector">
+      <UniqueIdentifier>{e80be64c-ffe3-4c10-b916-62cc433541b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\test">
+      <UniqueIdentifier>{4eb809b1-ffa4-4474-9a45-9a811000f7db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\test\api">
+      <UniqueIdentifier>{1073ba46-d0da-436f-8288-b9c82292647b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\util\matrix">
+      <UniqueIdentifier>{6be97584-6b0a-4ff0-8b55-ac61fb7a1082}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\util\shader">
+      <UniqueIdentifier>{3fcc0ca2-83f7-427b-a523-5ff85e80a73a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\GameManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vector.cpp">
+      <Filter>src\util\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\matrix.cpp">
+      <Filter>src\util\matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shader.cpp">
+      <Filter>src\util\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObject.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\GameManager.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AbstractGameManager.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="src\vector.h">
+      <Filter>src\util\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="src\test\api\catch.hpp">
+      <Filter>src\test\api</Filter>
+    </ClInclude>
+    <ClInclude Include="src\test\testRunner.h">
+      <Filter>src\test</Filter>
+    </ClInclude>
+    <ClInclude Include="src\matrix.h">
+      <Filter>src\util\matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shader.h">
+      <Filter>src\util\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObject.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="project.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\glsl\basic.frag">
+      <Filter>src\util\shader</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="src\glsl\basic.vert">
+      <Filter>src\util\shader</Filter>
+    </Xml>
+  </ItemGroup>
+</Project>
