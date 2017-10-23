@@ -1,22 +1,26 @@
 ///////////////////////////////////////////////////////////////////////
 //
-// Drawing two instances of a triangle in Modern OpenGL.
-// A "hello world" of Modern OpenGL.
+// Assignment consists in the following:
 //
-// Assignment : Create Shader Abstraction 
-//					(e.g. check compilation/linkage for errors, read from file) 
-//			  : Manage Multiple Drawable Entities (using your vertex and matrix classes)
-//              Draw a set of 7 TANs (i.e. TANGRAM shapes) of different colors: 
-//              (1) 3 different TAN geometric shapes at the origin:
-//					- right triangle
-//					- square
-//					- parallelogram
-//              (2) 7 TANs of different colors put together to form a shape of your choice:
-//					- 2 big right triangles
-//					- 1 medium right triangle
-//					- 2 small right triangles
-//					- 1 square
-//					- 1 parallelogram;
+// - Create the following changes to your scene, making it fully 3D:
+//   - Extrude your TANs into the 3rd dimension. The TANs should have
+//     slightly different "heights".
+//   - The new faces of each TAN should share the same hue as the 
+//     original top face color but have different levels of saturation 
+//     and brightness.
+//
+// - Add the following functionality:
+//   - Create a View Matrix from (eye, center, up) parameters.
+//   - Create an Orthographic Projection Matrix from (left-right, 
+//     bottom-top, near-far) parameters.
+//   - Create a Perspective Projection Matrix from (fovy, aspect,
+//     nearZ, farZ) parameters.
+//
+// - Add the following dynamics to the application:
+//   - Create a free 3D camera controlled by the mouse allowing to 
+//     visualize the scene through all its angles.
+//   - Change perspective from orthographic to perspective and back as
+//     a response to pressing the key 'p'.
 //
 // (c) 2013-17 by Carlos Martinho
 //
@@ -29,6 +33,7 @@
 
 #define VERTICES 0
 #define COLORS 1
+#define OFFSET 0.01f
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -58,44 +63,20 @@ void GameManager::checkOpenGLError(std::string error)
 
 void GameManager::createShaderProgram()
 {
-	GLint result = GL_FALSE;
-	int logLength;
+	vertexShader.setup(GL_VERTEX_SHADER);
+	fragmentShader.setup(GL_FRAGMENT_SHADER);
 
-	const GLchar* vertexShaderSrc = vertexShader.shaderProgram.c_str();
-	const GLchar* fragmentShaderSrc = fragmentShader.shaderProgram.c_str();
-
-	//VERTEX SHADER
-	VertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(VertexShaderId, 1, &vertexShaderSrc, 0);
-	glCompileShader(VertexShaderId);
-
-
-	glGetShaderiv(VertexShaderId, GL_COMPILE_STATUS, &result);
-	glGetShaderiv(VertexShaderId, GL_INFO_LOG_LENGTH, &logLength);
-	std::vector<GLchar> vertShaderError((logLength > 1) ? logLength : 1);
-	glGetShaderInfoLog(VertexShaderId, logLength, NULL, &vertShaderError[0]);
-	std::cout << &vertShaderError[0] << std::endl;
-
-	//FRAGMENT SHADER
-	FragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(FragmentShaderId, 1, &fragmentShaderSrc, 0);
-	glCompileShader(FragmentShaderId);
-
-	glGetShaderiv(FragmentShaderId, GL_COMPILE_STATUS, &result);
-	glGetShaderiv(FragmentShaderId, GL_INFO_LOG_LENGTH, &logLength);
-	std::vector<GLchar> fragmentShaderError((logLength > 1) ? logLength : 1);
-	glGetShaderInfoLog(FragmentShaderId, logLength, NULL, &fragmentShaderError[0]);
-	std::cout << &fragmentShaderError[0] << std::endl;
-
-	//LINKING
 	ProgramId = glCreateProgram();
-	glAttachShader(ProgramId, VertexShaderId);
-	glAttachShader(ProgramId, FragmentShaderId);
+	vertexShader.attach(ProgramId);
+	fragmentShader.attach(ProgramId);
 
-	glBindAttribLocation(ProgramId, VERTICES, "in_Position");
-	glBindAttribLocation(ProgramId, COLORS, "in_Color");
+	vertexShader.bind(VERTICES, "in_Position");
+	fragmentShader.bind(COLORS, "in_Color");
+
 	glLinkProgram(ProgramId);
-	UniformId = glGetUniformLocation(ProgramId, "Matrix");
+	UniformId = glGetUniformLocation(ProgramId, "ModelMatrix");
+	UboId = glGetUniformBlockIndex(ProgramId, "SharedMatrices");
+	glUniformBlockBinding(ProgramId, UboId, UBO_BP);
 
 	checkOpenGLError("ERROR: Could not create shaders.");
 }
@@ -103,11 +84,8 @@ void GameManager::createShaderProgram()
 void GameManager::destroyShaderProgram()
 {
 	glUseProgram(0);
-	glDetachShader(ProgramId, VertexShaderId);
-	glDetachShader(ProgramId, FragmentShaderId);
-
-	glDeleteShader(FragmentShaderId);
-	glDeleteShader(VertexShaderId);
+	vertexShader.destroy();
+	fragmentShader.destroy();
 	glDeleteProgram(ProgramId);
 
 	checkOpenGLError("ERROR: Could not destroy shaders.");
@@ -133,6 +111,10 @@ void GameManager::timer(int value)
 	FrameCount = 0;
 }
 
+void GameManager::keyTimer(int value) {
+	ViewMatrix *= mat4::translationMatrix(vec3(d * OFFSET - a * OFFSET, w * OFFSET - s * OFFSET, r * OFFSET - l * OFFSET));
+}
+
 void GameManager::cleanup()
 {
 	destroyShaderProgram();
@@ -153,7 +135,6 @@ void GameManager::drawScene()
 	glUseProgram(ProgramId);
 
 	for (int i = 0; i < 7; i++) {
-		glBindVertexArray(gameObjects[i].VaoId);
 		gameObjects[i].draw(UniformId);
 	}
 
@@ -172,6 +153,58 @@ void GameManager::display()
 	}
 }
 
+void GameManager::keyboard(unsigned char key, int x, int y, bool up)
+{
+	bool pressed = !up;
+	switch (key) {
+	case 'p':
+		if (!up) {
+			if (currentProjection == 0) {
+				currentProjection = 1;
+				ProjectionMatrix = &ProjectionMatrixPerspective;
+			}
+			else {
+				currentProjection = 0;
+				ProjectionMatrix = &ProjectionMatrixOrtho;
+			}
+		}
+		break;
+	case 'w':
+		w = pressed;
+		break;
+	case 's':
+		s = pressed;
+		break;
+	case 'a':
+		a = pressed;
+		break;
+	case 'd':
+		d = pressed;
+		break;
+	}
+}
+
+void GameManager::mouse(int button, int state, int x, int y)
+{
+	bool pressed = (state == GLUT_DOWN);
+	switch (button) {
+	case GLUT_LEFT_BUTTON:
+		l = pressed;
+		break;
+	case GLUT_RIGHT_BUTTON:
+		r = pressed;
+		break;
+	}
+}
+
+void GameManager::mouseMovement(float x, float y)
+{
+	ViewMatrix *= mat4::xRotationMatrix((mouseY - y));
+	ViewMatrix *= mat4::yRotationMatrix((mouseX - x));
+	mouseX = x;
+	mouseY = y;
+}
+
 void GameManager::idle()
 {
 	glutPostRedisplay();
@@ -182,6 +215,8 @@ void GameManager::reshape(int w, int h)
 	WinX = w;
 	WinY = h;
 	glViewport(0, 0, WinX, WinY);
+	ProjectionMatrixOrtho = mat4::ortho(-w/100, w/100, -h/100, h/100, 1, 10);
+	ProjectionMatrixPerspective = mat4::perspective(30, -w/h, 1, 10);
 }
 
 void GameManager::init(int argc, char* argv[]) {
@@ -200,45 +235,47 @@ void GameManager::createBufferObjects()
 	//t*r*s
 
 	//small triangles
-	gameObjects[0] = GameObject::triangle(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	gameObjects[0].translate(mat4::translationMatrix(vec3(-1.0f * SIZE_RATIO, 0.5f * SIZE_RATIO, 0.0f)));
-	
-	gameObjects[1] = GameObject::triangle(vec4(1.0f, 1.0f, 0.5f, 1.0f));
-	gameObjects[1].translate(mat4::translationMatrix(vec3(-1.5f * SIZE_RATIO, 2.0f * SIZE_RATIO, 0.0f)));
+	gameObjects[0] = GameObject::triangle(vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.05f);
+	gameObjects[0].translate(mat4::translationMatrix(vec3(-1.0f, 0.5f, 0.0f)));
+
+	gameObjects[1] = GameObject::triangle(vec4(1.0f, 1.0f, 0.5f, 1.0f), 0.1f);
+	gameObjects[1].translate(mat4::translationMatrix(vec3(-1.5f, 2.0f, 0.0f)));
 	gameObjects[1].rotate(mat4::zRotationMatrix(90.0f));
-	
+
 	//medium triangle
-	gameObjects[2] = GameObject::triangle(vec4(1.0f, 0.5f, 1.0f, 1.0f));
-	gameObjects[2].translate(mat4::translationMatrix(vec3(0.5f * SIZE_RATIO, 0.5f * SIZE_RATIO, 0.0f)));
+	gameObjects[2] = GameObject::triangle(vec4(1.0f, 0.5f, 1.0f, 1.0f), 0.15f);
+	gameObjects[2].translate(mat4::translationMatrix(vec3(0.5f, 0.5f, 0.0f)));
 	gameObjects[2].rotate(mat4::zRotationMatrix(135.0f));
-	gameObjects[2].scale(mat4::scaleMatrix(sqrt(2)));
+	gameObjects[2].scale(mat4::scaleMatrix((float)sqrt(2)));
 
 	//big triangles
-	gameObjects[3] = GameObject::triangle(vec4(0.0f, 1.0f, 1.0f, 1.0f));
-	gameObjects[3].translate(mat4::translationMatrix(vec3(-0.7125f * SIZE_RATIO, -0.7125f * SIZE_RATIO, 0.0f)));
+	gameObjects[3] = GameObject::triangle(vec4(0.0f, 1.0f, 1.0f, 1.0f), 0.2f);
+	gameObjects[3].translate(mat4::translationMatrix(vec3(-0.7125f, -0.7125f, 0.0f)));
 	gameObjects[3].rotate(mat4::zRotationMatrix(45.0f));
 	gameObjects[3].scale(mat4::scaleMatrix(2));
 
-	gameObjects[4] = GameObject::triangle(vec4(0.5f, 0.5f, 1.0f, 1.0f));
-	gameObjects[4].translate(mat4::translationMatrix(vec3(0.6875f * SIZE_RATIO, -2.125f * SIZE_RATIO, 0.0f)));
+	gameObjects[4] = GameObject::triangle(vec4(0.5f, 0.5f, 1.0f, 1.0f), 0.25f);
+	gameObjects[4].translate(mat4::translationMatrix(vec3(0.70f, -2.125f, 0.0f)));
 	gameObjects[4].rotate(mat4::zRotationMatrix(-135.0f));
 	gameObjects[4].scale(mat4::scaleMatrix(2));
 
 	//square
-	gameObjects[5] = GameObject::square(vec4(1.0f, 0.5f, 0.5f, 1.0f));
-	gameObjects[5].translate(mat4::translationMatrix(vec3(1.0f * SIZE_RATIO, 2.0f * SIZE_RATIO, 0.0f)));
+	gameObjects[5] = GameObject::square(vec4(1.0f, 0.5f, 0.5f, 1.0f), 0.3f);
+	gameObjects[5].translate(mat4::translationMatrix(vec3(1.0f, 2.0f, 0.0f)));
 
 	//parallelogram
-	gameObjects[6] = GameObject::parallelogram(vec4(0.5f, 1.0f, 0.5f, 1.0f));
-	gameObjects[6].translate(mat4::translationMatrix(vec3(-0.50f * SIZE_RATIO, 1.5f * SIZE_RATIO, 0.0f)));
+	gameObjects[6] = GameObject::parallelogram(vec4(0.5f, 1.0f, 0.5f, 1.0f), 0.35f);
+	gameObjects[6].translate(mat4::translationMatrix(vec3(-0.50f, 1.5f, 0.0f)));
 	gameObjects[6].rotate(mat4::zRotationMatrix(90.0f));
 
 
 	for (int i = 0; i < 7; i++) {
+		gameObjects[i].ProjectionMatrix = &ProjectionMatrix;
+		gameObjects[i].ViewMatrix = &ViewMatrix;
 		glGenVertexArrays(1, &gameObjects[i].VaoId);
 		glBindVertexArray(gameObjects[i].VaoId);
 		{
-			glGenBuffers(2, gameObjects[i].VboId);
+			glGenBuffers(3, gameObjects[i].VboId);
 
 			glBindBuffer(GL_ARRAY_BUFFER, gameObjects[i].VboId[0]);
 			glBufferData(GL_ARRAY_BUFFER, gameObjects[i].wholeVertexBufferSize(), gameObjects[i].vertices, GL_STATIC_DRAW);
@@ -249,6 +286,10 @@ void GameManager::createBufferObjects()
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gameObjects[i].VboId[1]);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, gameObjects[i].indexBufferSize(), gameObjects[i].indices, GL_STATIC_DRAW);
+
+			glBindBuffer(GL_UNIFORM_BUFFER, gameObjects[i].VboId[2]);
+			glBufferData(GL_UNIFORM_BUFFER, sizeof(mat4) * 2, 0, GL_STREAM_DRAW);
+			glBindBufferBase(GL_UNIFORM_BUFFER, UBO_BP, gameObjects[i].VboId[2]);
 		}
 	}
 	glBindVertexArray(0);
@@ -271,7 +312,6 @@ void GameManager::destroyBufferObjects()
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 	}
-
 
 	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs.");
 }

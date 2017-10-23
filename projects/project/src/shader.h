@@ -4,13 +4,21 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <vector>
+
 using namespace std;
 class shader
 {
-public:
+private:
+	GLuint shaderId;
+	GLuint programId;
 	std::string shaderProgram;
+public:
 	shader(char* filename);
 	~shader();
-	//void load(char* filename);
+	void setup(GLenum type);
+	void attach(GLuint programId);
+	void bind(GLuint index, const char* name);
+	void destroy();
 };
 

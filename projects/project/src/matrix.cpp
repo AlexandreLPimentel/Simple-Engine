@@ -495,11 +495,11 @@ const mat3 & mat3::operator*=(mat3 m)
 	data[1] = line1.dot(col2);
 	data[2] = line1.dot(col3);
 	data[3] = line2.dot(col1);
-	data[4] = line2.dot(col2); 
-	data[5] = line2.dot(col3); 
-	data[6] = line3.dot(col1); 
-	data[7] = line3.dot(col2); 
-	data[8] = line3.dot(col3); 
+	data[4] = line2.dot(col2);
+	data[5] = line2.dot(col3);
+	data[6] = line3.dot(col1);
+	data[7] = line3.dot(col2);
+	data[8] = line3.dot(col3);
 	return *this;
 }
 
@@ -853,6 +853,42 @@ mat4 mat4::zRotationMatrix(float angle)
 		si, co, 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1);
+}
+
+mat4 mat4::lookAt(vec3 eye, vec3 center, vec3 up)
+{
+	vec3 v = center - eye;
+	v.normalize();
+
+	vec3 s = v.cross(up);
+	s.normalize();
+
+	vec3 u = s.cross(v);
+
+	return mat4(
+		s.getX(), s.getY(), s.getZ(), -s.dot(eye),
+		u.getX(), u.getY(), u.getZ(), -u.dot(eye),
+		-v.getX(), -v.getY(), -v.getZ(), v.dot(eye),
+		0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+mat4 mat4::ortho(float left, float right, float top, float bottom, float near, float far)
+{
+	return	mat4(
+		2 / (right - left), 0.0f, 0.0f, (left + right) / (left - right),
+		0.0f, 2 / (top - bottom), 0.0f, (bottom + top) / (bottom - top),
+		0.0f, 0.0f, 2 / (near - far), (near + far) / (near - far),
+		0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+mat4 mat4::perspective(float fovy, float aspect, float zNear, float zFar)
+{
+	float d = 1 / tan(fovy / 2);
+	return mat4(
+		d / aspect, 0.0f, 0.0f, 0.0f,
+		0.0f, d, 0.0f, 0.0f,
+		0.0f, 0.0f, (zNear + zFar) / (zNear - zFar), (2 * zNear * zFar) / (zNear - zFar),
+		0.0f, 0.0f, -1.0f, 0);
 }
 
 const mat4 mat4::operator=(mat4 m)

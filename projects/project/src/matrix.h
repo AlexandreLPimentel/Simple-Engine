@@ -169,6 +169,9 @@ public:
 	static mat4 xRotationMatrix(float angle);
 	static mat4 yRotationMatrix(float angle);
 	static mat4 zRotationMatrix(float angle);
+	static mat4 lookAt(vec3 eye, vec3 center, vec3 up);
+	static mat4 ortho(float left, float right, float top, float bottom, float near, float far);
+	static mat4 perspective(float fovy, float aspect, float zNear, float zFar);
 
 	//lvalue destroying operators
 	const mat4 operator=(mat4 m);
