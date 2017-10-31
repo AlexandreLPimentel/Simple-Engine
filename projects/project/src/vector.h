@@ -12,6 +12,7 @@ struct vec2
 {
 	friend vec3;
 	friend vec4;
+	friend struct qtrn;
 protected:
 	float data[2];
 public:
@@ -59,11 +60,13 @@ struct vec3
 {
 	friend vec2;
 	friend vec4;
+	friend struct qtrn;
 protected:
 	float data[3];
 public:
 	//Vector creation and manipulation
 	vec3(const vec4 & u, bool homogeneousCoordinates);
+	vec3(const vec4 & u);
 	vec3(const vec3 & u);
 	vec3(float x, float y, float z);
 	vec3(float c);
@@ -112,6 +115,7 @@ struct vec4
 {
 	friend vec2;
 	friend vec3;
+	friend struct qtrn;
 protected:
 	float data[4];
 public:
@@ -153,6 +157,7 @@ public:
 	//math
 	float quadrance();
 	void normalize();
+	static vec4 normalize(vec4 v);
 	float norm();
 	float dot(vec4 v);
 	vec4 clean();

@@ -167,6 +167,13 @@ vec3::vec3(const vec4 & u, bool homogeneousCoordinates)
 	}	
 }
 
+vec3::vec3(const vec4 & u)
+{
+	data[0] = u.data[0];
+	data[1] = u.data[1];
+	data[2] = u.data[2];
+}
+
 vec3::vec3(const vec3 & u)
 {
 	data[0] = u.data[0];
@@ -336,13 +343,13 @@ vec3 vec3::rodrigues(vec3 axis, float angle)
 vec3 vec3::clean()
 {
 	this->data[0] *= (float)pow(10, 5);
-	this->data[0] = floor(this->data[0]);
+	this->data[0] = round(this->data[0]);
 	this->data[0] /= (float)pow(10, 5);
 	this->data[1] *= (float)pow(10, 5);
-	this->data[1] = floor(this->data[1]);
+	this->data[1] = round(this->data[1]);
 	this->data[1] /= (float)pow(10, 5);
 	this->data[2] *= (float)pow(10, 5);
-	this->data[2] = floor(this->data[2]);
+	this->data[2] = round(this->data[2]);
 	this->data[2] /= (float)pow(10, 5);
 	return *this;
 }
@@ -525,7 +532,11 @@ const vec4 & vec4::operator/=(float value)
 
 bool operator==(const vec4 & u, const vec4 & v)
 {
-	return u.data[0] == v.data[0] && u.data[1] == v.data[1] && u.data[2] == v.data[2] && u.data[3] == v.data[3];
+	vec4 a = vec4(u);
+	a.clean();
+	vec4 b = vec4(v);
+	b.clean();
+	return a.data[0] == b.data[0] && a.data[1] == b.data[1] && a.data[2] == b.data[2] && a.data[3] == b.data[3];
 }
 
 bool operator!=(const vec4 & u, const vec4 & v)
@@ -538,11 +549,23 @@ float vec4::quadrance() {
 }
 
 void vec4::normalize() {
-	float nm = norm();
-	data[0] /= nm;
-	data[1] /= nm;
-	data[2] /= nm;
-	data[3] /= nm;
+	float nm = 1 / norm();
+	data[0] *= nm;
+	data[1] *= nm;
+	data[2] *= nm;
+	data[3] *= nm;
+}
+
+vec4 vec4::normalize(vec4 v)
+{
+	vec4 vn;
+	float s = 1 / (v.data[3] * sqrt(v.data[0]*v.data[0] + v.data[1]*v.data[1] + v.data[2]*v.data[2]));
+	vn.data[0] = v.data[0] * s;
+	vn.data[1] = v.data[1] * s;
+	vn.data[2] = v.data[2] * s;
+	vn.data[3] = 1.0f;
+	return vn;
+
 }
 
 float vec4::norm() {
@@ -567,17 +590,17 @@ istream & operator>>(istream & is, const vec4 & vector)
 
 vec4 vec4::clean()
 {
-	this->data[0] *= (float)pow(10, 5);
-	this->data[0] = floor(this->data[0]);
-	this->data[0] /= (float)pow(10, 5);
-	this->data[1] *= (float)pow(10, 5);
-	this->data[1] = floor(this->data[1]);
-	this->data[1] /= (float)pow(10, 5);
-	this->data[2] *= (float)pow(10, 5);
-	this->data[2] = floor(this->data[2]);
-	this->data[2] /= (float)pow(10, 5);
-	this->data[3] *= (float)pow(10, 5);
-	this->data[3] = floor(this->data[3]);
-	this->data[3] /= (float)pow(10, 5);
+	this->data[0] *= (float)pow(10, 3);
+	this->data[0] = round(this->data[0]);
+	this->data[0] /= (float)pow(10, 3);
+	this->data[1] *= (float)pow(10, 3);
+	this->data[1] = round(this->data[1]);
+	this->data[1] /= (float)pow(10, 3);
+	this->data[2] *= (float)pow(10, 3);
+	this->data[2] = round(this->data[2]);
+	this->data[2] /= (float)pow(10, 3);
+	this->data[3] *= (float)pow(10, 3);
+	this->data[3] = round(this->data[3]);
+	this->data[3] /= (float)pow(10, 3);
 	return *this;
 }

@@ -22,6 +22,9 @@
     <Filter Include="src\util\shader">
       <UniqueIdentifier>{3fcc0ca2-83f7-427b-a523-5ff85e80a73a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\util\quaternion">
+      <UniqueIdentifier>{69b001c9-cfd6-47b6-b54c-171b2be797d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\GameManager.cpp">
@@ -41,6 +44,12 @@
     </ClCompile>
     <ClCompile Include="src\GameObject.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\quaternion.cpp">
+      <Filter>src\util\quaternion</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +77,12 @@
     </ClInclude>
     <ClInclude Include="src\GameObject.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Camera.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\quaternion.h">
+      <Filter>src\util\quaternion</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

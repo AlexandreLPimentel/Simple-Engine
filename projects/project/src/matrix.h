@@ -9,7 +9,6 @@ struct mat2;
 struct mat3;
 struct mat4;
 
-
 struct mat2
 {
 	friend mat3;
@@ -142,6 +141,7 @@ protected:
 	float data[16];
 public:
 	//Matrix creation and manipulation
+	mat4();
 	mat4(const mat2 & m);
 	mat4(const mat3 & m);
 	mat4(const mat4 & m);

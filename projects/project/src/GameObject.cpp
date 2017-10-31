@@ -11,7 +11,7 @@ GameObject::~GameObject()
 void GameObject::draw(GLint UniformId)
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[2]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(mat4), ViewMatrix->getColumnMajor());
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(mat4), (*ViewMatrix)->getColumnMajor());
 	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(mat4), sizeof(mat4), (*ProjectionMatrix)->getColumnMajor());
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
@@ -95,14 +95,14 @@ GameObject GameObject::triangle(vec4 color, float depth)
 
 	const GLubyte indices[] =
 	{
-		0,2,1,
-		5,3,4,
-		6,9,8,
-		7,9,6,
-		11,12,13,
-		10,12,11,
-		14,17,16,
-		14,15,17
+		0,1,2,
+		5,4,3,
+		6,8,9,
+		7,6,9,
+		11,13,12,
+		10,11,12,
+		14,16,17,
+		14,17,15
 	};
 
 	ret.numIndices = sizeof(indices) / sizeof(*indices);
@@ -163,18 +163,18 @@ GameObject GameObject::square(vec4 color, float depth)
 
 	const GLubyte indices[] =
 	{
-		0,1,2,
-		2,3,0,
-		7,5,4,
-		5,7,6,
-		9,10,11,
-		8,10,9,
-		13,15,14,
-		12,13,14,
-		19,17,16,
-		16,18,19,
-		22,23,20,
-		23,21,20
+		0,2,1,
+		2,0,3,
+		7,4,5,
+		5,6,7,
+		9,11,10,
+		8,9,10,
+		13,14,15,
+		12,14,13,
+		19,16,17,
+		16,19,18,
+		22,20,23,
+		23,20,21
 	};
 
 	ret.numIndices = sizeof(indices) / sizeof(*indices);
@@ -235,18 +235,18 @@ GameObject GameObject::parallelogram(vec4 color, float depth)
 
 	const GLubyte indices[] =
 	{
-		0,1,2,
-		2,3,0,
-		6,5,4,
-		6,4,7,
-		8,10,9,
-		9,10,11,
-		12,15,13,
-		12,14,15,
-		19,17,16,
-		16,18,19,
-		20,21,23,
-		20,23,22
+		0,2,1,
+		2,0,3,
+		6,4,5,
+		6,7,4,
+		8,9,10,
+		9,11,10,
+		12,13,15,
+		12,15,14,
+		19,16,17,
+		16,19,18,
+		20,23,21,
+		20,22,23
 	};
 
 	ret.numIndices = sizeof(indices) / sizeof(*indices);

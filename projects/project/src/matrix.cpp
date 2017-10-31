@@ -276,9 +276,9 @@ const mat2 operator*(mat2 m, mat2 n)
 
 mat2 mat2::clean() {
 	for (int i = 0; i < 4; i++) {
-		this->data[i] *= (float)pow(10, 5);
-		this->data[i] = floor(this->data[i]);
-		this->data[i] /= (float)pow(10, 5);
+		this->data[i] *= (float)pow(10, 3);
+		this->data[i] = (int) this->data[i];
+		this->data[i] /= (float)pow(10, 3);
 	}
 	return *this;
 }
@@ -666,9 +666,9 @@ const mat3 operator*(mat3 m, mat3 n)
 
 mat3 mat3::clean() {
 	for (int i = 0; i < 9; i++) {
-		this->data[i] *= (float)pow(10, 5);
-		this->data[i] = floor(this->data[i]);
-		this->data[i] /= (float)pow(10, 5);
+		this->data[i] *= (float)pow(10, 3);
+		this->data[i] = round(this->data[i]);
+		this->data[i] /= (float)pow(10, 3);
 	}
 	return *this;
 }
@@ -677,6 +677,10 @@ mat3 mat3::clean() {
 
 
 /**********************mat4***************************/
+
+mat4::mat4()
+{
+}
 
 mat4::mat4(const mat2 & m)
 {
@@ -883,7 +887,7 @@ mat4 mat4::ortho(float left, float right, float top, float bottom, float near, f
 
 mat4 mat4::perspective(float fovy, float aspect, float zNear, float zFar)
 {
-	float d = 1 / tan(fovy / 2);
+	float d = 1 / tan(((PI * fovy) / 180) / 2);
 	return mat4(
 		d / aspect, 0.0f, 0.0f, 0.0f,
 		0.0f, d, 0.0f, 0.0f,
@@ -1316,9 +1320,9 @@ const mat4 operator*(mat4 m, mat4 n)
 
 mat4 mat4::clean() {
 	for (int i = 0; i < 16; i++) {
-		this->data[i] *= (float)pow(10, 5);
-		this->data[i] = floor(this->data[i]);
-		this->data[i] /= (float)pow(10, 5);
+		this->data[i] *= (float)pow(10, 3);
+		this->data[i] = (int) this->data[i];
+		this->data[i] /= (float)pow(10, 3);
 	}
 	return *this;
 }

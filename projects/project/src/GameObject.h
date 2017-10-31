@@ -21,7 +21,7 @@ public:
 	GLuint numIndices;
 	mat4 transformation = mat4::identityMatrix();
 	GLuint VaoId, VboId[3];
-	mat4* ViewMatrix, **ProjectionMatrix;
+	mat4 **ViewMatrix, **ProjectionMatrix;
 
 	GameObject();
 	~GameObject();

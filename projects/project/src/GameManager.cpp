@@ -1,26 +1,17 @@
 ///////////////////////////////////////////////////////////////////////
 //
-// Assignment consists in the following:
+// Using quaternions to rotate in 3D.
 //
-// - Create the following changes to your scene, making it fully 3D:
-//   - Extrude your TANs into the 3rd dimension. The TANs should have
-//     slightly different "heights".
-//   - The new faces of each TAN should share the same hue as the 
-//     original top face color but have different levels of saturation 
-//     and brightness.
-//
-// - Add the following functionality:
-//   - Create a View Matrix from (eye, center, up) parameters.
-//   - Create an Orthographic Projection Matrix from (left-right, 
-//     bottom-top, near-far) parameters.
-//   - Create a Perspective Projection Matrix from (fovy, aspect,
-//     nearZ, farZ) parameters.
-//
-// - Add the following dynamics to the application:
-//   - Create a free 3D camera controlled by the mouse allowing to 
-//     visualize the scene through all its angles.
-//   - Change perspective from orthographic to perspective and back as
-//     a response to pressing the key 'p'.
+// Assignment: 1. Create a class for Quaternions.
+//             2. Create a scene with a camera rotating around an 
+//                object at the origin and pointing towards it. 
+//                Do NOT use "gluLookAt" to create the ViewMatrix, 
+//                use rotation matrices!
+//             3. Gimbal lock mode ON: use Translation + Rotation 
+//                matrices (e.g. Euler angles, Rodrigues’ formula).
+//             4. Gimbal lock mode OFF: use Quaternions to produce a 
+//                transformation matrix and avoid gimbal lock.
+//             5. Switch between modes by pressing the 'g' key.
 //
 // (c) 2013-17 by Carlos Martinho
 //
@@ -29,11 +20,11 @@
 
 #include "GameManager.h"
 
-#define CAPTION "Hello Modern 2D World"
+#define CAPTION "Hello Modern 3D World"
 
 #define VERTICES 0
 #define COLORS 1
-#define OFFSET 0.01f
+#define OFFSET 2.0f
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -112,7 +103,14 @@ void GameManager::timer(int value)
 }
 
 void GameManager::keyTimer(int value) {
-	ViewMatrix *= mat4::translationMatrix(vec3(d * OFFSET - a * OFFSET, w * OFFSET - s * OFFSET, r * OFFSET - l * OFFSET));
+	if (!(d || a || w || s || r || l)) {
+		return;
+	}
+	camera.move(a * OFFSET - d * OFFSET, w * OFFSET - s * OFFSET, 0, 0, 0);
+	
+	//old
+	//camera.move(d * OFFSET - a * OFFSET, r * OFFSET - l * OFFSET, w * OFFSET - s * OFFSET, 0, 0);
+	//*ViewMatrix *= mat4::translationMatrix(vec3(d * OFFSET - a * OFFSET, w * OFFSET - s * OFFSET, r * OFFSET - l * OFFSET));
 }
 
 void GameManager::cleanup()
@@ -169,17 +167,38 @@ void GameManager::keyboard(unsigned char key, int x, int y, bool up)
 			}
 		}
 		break;
+	case 'g':
+		g = !g;
+		if (g) {
+			camera.changeMode();
+		}
+		break;
 	case 'w':
+		if (w != pressed) {
+			//cout << "w is " << (pressed ? "now pressed" : "no longer pressed") << endl;
+		}
 		w = pressed;
 		break;
 	case 's':
+		if (s != pressed) {
+			//cout << "s is " << (pressed ? "now pressed" : "no longer pressed") << endl;
+		}
 		s = pressed;
 		break;
 	case 'a':
+		if (a != pressed) {
+			//cout << "a is " << (pressed ? "now pressed" : "no longer pressed") << endl;
+		}
 		a = pressed;
 		break;
 	case 'd':
+		if (d != pressed) {
+			//cout << "d is " << (pressed ? "now pressed" : "no longer pressed") << endl;
+		}
 		d = pressed;
+		break;
+	case 'q':
+		exit(0);
 		break;
 	}
 }
@@ -199,10 +218,23 @@ void GameManager::mouse(int button, int state, int x, int y)
 
 void GameManager::mouseMovement(float x, float y)
 {
-	ViewMatrix *= mat4::xRotationMatrix((mouseY - y));
-	ViewMatrix *= mat4::yRotationMatrix((mouseX - x));
+	if (ignoreMouse) {
+		ignoreMouse = false;
+	}
+	else {
+		camera.move(0, 0, 0, mouseX - x, mouseY - y);
+	}
+	if (x > 3 * WinX / 4 || x < WinX / 4 ) {
+		ignoreMouse = true;
+		glutWarpPointer(WinX / 2, y);
+	}
+	if (y > 3 * WinY / 4 || y < WinY / 4) {
+		ignoreMouse = true;
+		glutWarpPointer(x, WinY / 2);
+	}
 	mouseX = x;
 	mouseY = y;
+
 }
 
 void GameManager::idle()
@@ -215,8 +247,8 @@ void GameManager::reshape(int w, int h)
 	WinX = w;
 	WinY = h;
 	glViewport(0, 0, WinX, WinY);
-	ProjectionMatrixOrtho = mat4::ortho(-w/100, w/100, -h/100, h/100, 1, 10);
-	ProjectionMatrixPerspective = mat4::perspective(30, -w/h, 1, 10);
+	ProjectionMatrixOrtho = mat4::ortho((float)-w / 100, (float)w / 100, (float)h / 100, (float)-h / 100, 1, 50);
+	ProjectionMatrixPerspective = mat4::perspective(25, (float)w / h, 1, 50);
 }
 
 void GameManager::init(int argc, char* argv[]) {
@@ -225,6 +257,8 @@ void GameManager::init(int argc, char* argv[]) {
 	setupOpenGL();
 	createShaderProgram();
 	createBufferObjects();
+	camera = Camera(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
+	ViewMatrix = &(camera.ViewMatrix);
 }
 
 /////OBJECTS

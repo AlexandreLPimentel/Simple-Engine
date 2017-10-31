@@ -1,15 +1,18 @@
 #pragma once
-#include "AbstractGameManager.h"
-#include "vector.h"
-#include "matrix.h"
-#include "shader.h"
-#include "GameObject.h"
+#include <AbstractGameManager.h>
+#include <vector.h>
+#include <matrix.h>
+#include <quaternion.h>
+#include <shader.h>
+#include <GameObject.h>
+#include <Camera.h>
 
 class GameManager : public AbstractGameManager {
 private:
 	int WinX = 600, WinY = 600;
 	float mouseX, mouseY;
-	bool w, a, s, d, l, r;
+	bool ignoreMouse = false;
+	bool w, a, s, d, l, r, g;
 	int WindowHandle = 0;
 	unsigned int FrameCount = 0;
 	unsigned const FPSLimit = 60;
@@ -24,9 +27,10 @@ private:
 	const GLuint UBO_BP = 0;
 	int currentProjection = 0;
 	mat4 *ProjectionMatrix = &ProjectionMatrixOrtho;
-	mat4 ProjectionMatrixOrtho = mat4::ortho(-5, 5, -5, 5, 1, 10);
-	mat4 ProjectionMatrixPerspective = mat4::perspective(30, -1, 1, 10);
-	mat4 ViewMatrix = mat4::lookAt(vec3(0, 0, -5), vec3(0, 0, 0), vec3(0, -1, 0));
+	mat4 ProjectionMatrixOrtho;
+	mat4 ProjectionMatrixPerspective;
+	mat4 *ViewMatrix;
+	Camera camera;
 public:
 	GameManager();
 	void timer(int value);

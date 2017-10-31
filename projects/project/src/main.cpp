@@ -57,6 +57,7 @@ void setupCallbacks()
 	glutKeyboardFunc(parseKeyboardDownEvent);
 	glutMouseFunc(parseMouseEvent);
 	glutPassiveMotionFunc(parseMouseMovent);
+	glutMotionFunc(parseMouseMovent);
 	glutTimerFunc(0, timer, 0);
 	glutTimerFunc(0, keyTimer, 0);
 }
@@ -69,6 +70,13 @@ void init(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
+	qtrnTest helper;
+	helper.qtest1();
+	helper.qtest2();
+	helper.qtest3();
+	helper.qtest4();
+	helper.qtest5();
+	helper.qtest6();
 	game = new GameManager();
 	init(argc, argv);
 	glutMainLoop();
