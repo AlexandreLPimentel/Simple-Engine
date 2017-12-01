@@ -1172,7 +1172,8 @@ SCENARIO("mat4 model and normal matrix", "[mat4]") {
 				mat4 s = mat4::scaleMatrix(2.0f);
 				THEN("make a model matrix from it") {
 					mat4 m = t*r*s;
-					cout << "Model matrix: \n" << m.clean() << '\n';
+					
+					<< "Model matrix: \n" << m.clean() << '\n';
 					THEN("make a normal matrix from it") {
 						mat3 n = mat3::transpose(mat3::inverse(mat3(m)));
 						cout << "Normal matrix: \n" << n.clean() << '\n';

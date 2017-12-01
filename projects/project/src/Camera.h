@@ -12,7 +12,6 @@ class Camera
 	float yRot = 0, xRot = 0;
 	vec3 s, v, u;
 	vec3 eye, center, up;
-	bool mode;
 	qtrn orientation;
 	mat4 rotationMatrix;
 public:
@@ -20,10 +19,9 @@ public:
 	mat4 originalMatrix;
 	Camera();
 	Camera(vec3 eye, vec3 center, vec3 up);
-	void move(float x, float y, float z, float xAngleOffset, float yAngleOffset);
-	void changeMode();
-	void updateRotationAndView(float x, float y);
+	void move(float xAngleOffset, float yAngleOffset, float depth);
 	void updateQuaternionAndView(float x, float y);
+	void updateQuaternionAndView(float depthOffSet);
 	~Camera();
 };
 

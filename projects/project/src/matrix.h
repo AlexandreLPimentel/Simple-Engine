@@ -57,8 +57,8 @@ public:
 	float determinant();
 	static mat2 inverse(mat2 m);
 	void inverse();
-	const float* getColumnMajor();
-	const float* getRowMajor();
+	float* getColumnMajor() const;
+	float* getRowMajor() const;
 
 	//print
 	friend std::ostream& operator<<(std::ostream& os, const mat2& matrix);
@@ -121,8 +121,8 @@ public:
 	float determinant();
 	static mat3 inverse(mat3 m);
 	void inverse();
-	const float* getColumnMajor();
-	const float* getRowMajor();
+	float* getColumnMajor() const;
+	float* getRowMajor() const;
 
 	//print
 	friend std::ostream& operator<<(std::ostream& os, const mat3& matrix);
@@ -190,8 +190,8 @@ public:
 	float determinant();
 	static mat4 inverse(mat4 m);
 	void inverse();
-	const float* getColumnMajor();
-	const float* getRowMajor();
+	float* getColumnMajor() const;
+	float* getRowMajor() const;
 
 	//print
 	friend std::ostream& operator<<(std::ostream& os, const mat4& matrix);

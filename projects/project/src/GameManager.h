@@ -1,11 +1,12 @@
 #pragma once
-#include <AbstractGameManager.h>
-#include <vector.h>
-#include <matrix.h>
-#include <quaternion.h>
-#include <shader.h>
-#include <GameObject.h>
-#include <Camera.h>
+#include "AbstractGameManager.h"
+#include "vector.h"
+#include "matrix.h"
+#include "quaternion.h"
+#include "shader.h"
+#include "GameObject.h"
+#include "Camera.h"
+#include "Scene.h"
 
 class GameManager : public AbstractGameManager {
 private:
@@ -21,9 +22,9 @@ private:
 	double const delta = 1.0 / FPSLimit * 1000;
 	shader vertexShader = shader("./src/glsl/basic.vert");
 	shader fragmentShader = shader("./src/glsl/basic.frag");
-	GameObject gameObjects[7];
+	GameObject gameObjects[9];
 	GLuint ProgramId;
-	GLint UboId, UniformId;
+	GLint ModelMatrix_UId, ViewMatrix_UId, ProjectionMatrix_UId;
 	const GLuint UBO_BP = 0;
 	int currentProjection = 0;
 	mat4 *ProjectionMatrix = &ProjectionMatrixOrtho;
@@ -31,6 +32,7 @@ private:
 	mat4 ProjectionMatrixPerspective;
 	mat4 *ViewMatrix;
 	Camera camera;
+	static Scene* scene;
 public:
 	GameManager();
 	void timer(int value);
@@ -55,4 +57,5 @@ public:
 	void destroyShaderProgram();
 	void createBufferObjects();
 	void destroyBufferObjects();
+	static void runAnimation(int value);
 };

@@ -142,9 +142,10 @@ ostream & operator<<(ostream & os, const vec2 & vector)
 	return os;
 }
 
-istream & operator>>(istream & is, const vec2 & vector)
+istream & operator>>(istream & is, vec2 & vector)
 {
-	//TODO
+	is >> vector.data[0];
+	is >> vector.data[1];
 	return is;
 }
 
@@ -362,9 +363,11 @@ ostream & operator<<(ostream & os, const vec3 & vector)
 	return os;
 }
 
-istream & operator>>(istream & is, const vec3 & vector)
+istream & operator>>(istream & is, vec3 & vector)
 {
-	//TODO
+	is >> vector.data[0];
+	is >> vector.data[1];
+	is >> vector.data[2];
 	return is;
 }
 
@@ -582,9 +585,12 @@ ostream & operator<<(ostream & os, const vec4 & vector)
 	return os;
 }
 
-istream & operator>>(istream & is, const vec4 & vector)
+istream & operator>>(istream & is, vec4 & vector)
 {
-	//TODO
+	is >> vector.data[0];
+	is >> vector.data[1];
+	is >> vector.data[2];
+	is >> vector.data[3];
 	return is;
 }
 

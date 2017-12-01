@@ -1,43 +1,56 @@
 #pragma once
 #include "vector.h"
 #include "matrix.h"
+#include "quaternion.h"
 #include "GL\glew.h"
 #include "GL\freeglut.h"
 
 #define SIZE_RATIO 1
 
-typedef struct
-{
-	vec4 XYZW;
-	vec4 RGBA;
-} Vertex;
-
 class GameObject
 {
 public:
-	Vertex* vertices;
+	vec3* vertices;
 	GLuint numVertices;
-	GLubyte* indices;
-	GLuint numIndices;
-	mat4 transformation = mat4::identityMatrix();
-	GLuint VaoId, VboId[3];
+	vec3* normals;
+	GLuint numNormals;
+	vec2* texCoords;
+	GLuint numTexCoords;
+	bool normalsLoaded, texCoordsLoaded;
+	MeshLoader* myMeshLoader;
+
+	qtrn all_rotation[4];
+	mat4 all_translation[4];
+	mat4 all_scale[4];
+	mat4 all_transformation = mat4::identityMatrix();
+	qtrn self_rotation[4];
+	mat4 self_translation[4];
+	mat4 self_scale[4];
+	mat4 self_transformation = mat4::identityMatrix();
+	GLuint VaoId, VboId[4];
 	mat4 **ViewMatrix, **ProjectionMatrix;
+
+	bool canAnimate;
+	float animationState = 0.0f;
+	int animationDirection = 0;
 
 	GameObject();
 	~GameObject();
-	void draw(GLint UniformId);
-	void rotate(mat4 rotation);
-	void scale(mat4 scale);
-	void translate(mat4 translation);
-	GLsizeiptr wholeVertexBufferSize() const;
+	mat4* GameObject::draw(GLint ModelMatrix_UId, GLint ViewMatrix_UId, GLint ProjectionMatrix_UId, mat4* parentMatrix);
+	void rotateAll(qtrn rotation, int state);
+	void scaleAll(mat4 scale, int state);
+	void translateAll(mat4 translation, int state);
+	void rotateSelf(qtrn rotation, int state);
+	void scaleSelf(mat4 scale, int state);
+	void translateSelf(mat4 translation, int state);
 	GLsizeiptr vertexBufferSize() const;
-	GLsizeiptr colorBufferSize() const;
-	GLsizeiptr indexBufferSize() const;
+	GLsizeiptr texCoordsBufferSize() const;
+	GLsizeiptr normalBufferSize() const;
+	void init(const GLuint UBO_BP);
+	void runAnimation(int milliseconds);
+	void animate(); //toggles animation direction
 
-	static GameObject triangle(vec4 color, float depth);
-	static GameObject square(vec4 color, float depth);
-	static GameObject parallelogram(vec4 color, float depth);
-	static vec4* generateColors(vec4 source);
+	static GameObject loadMesh(const std::string& filename);
 };
 
 

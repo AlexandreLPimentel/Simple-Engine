@@ -13,6 +13,7 @@ struct vec2
 	friend vec3;
 	friend vec4;
 	friend struct qtrn;
+	friend class MeshLoader;
 protected:
 	float data[2];
 public:
@@ -61,6 +62,7 @@ struct vec3
 	friend vec2;
 	friend vec4;
 	friend struct qtrn;
+	friend class MeshLoader;
 protected:
 	float data[3];
 public:
@@ -116,6 +118,7 @@ struct vec4
 	friend vec2;
 	friend vec3;
 	friend struct qtrn;
+	friend class MeshLoader;
 protected:
 	float data[4];
 public:

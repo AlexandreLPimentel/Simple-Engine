@@ -194,13 +194,13 @@ void mat2::inverse()
 	}
 }
 
-const float * mat2::getColumnMajor()
+float * mat2::getColumnMajor() const
 {
 	mat2 n = transpose(*this);
 	return n.getRowMajor();
 }
 
-const float * mat2::getRowMajor()
+float * mat2::getRowMajor() const
 {
 	float* vec = (float*)malloc(4 * sizeof(float));
 	memcpy(vec, data, 4 * sizeof(float));
@@ -576,13 +576,13 @@ void mat3::inverse()
 	}
 }
 
-const float * mat3::getColumnMajor()
+float * mat3::getColumnMajor() const
 {
 	mat3 n = transpose(*this);
 	return n.getRowMajor();
 }
 
-const float * mat3::getRowMajor()
+float * mat3::getRowMajor() const
 {
 	float* vec = (float*)malloc(9 * sizeof(float));
 	memcpy(vec, data, 9 * sizeof(float));
@@ -1220,13 +1220,13 @@ void mat4::inverse()
 	}
 }
 
-const float * mat4::getColumnMajor()
+float * mat4::getColumnMajor() const
 {
 	mat4 n = transpose(*this);
 	return n.getRowMajor();
 }
 
-const float * mat4::getRowMajor()
+float * mat4::getRowMajor() const
 {
 	float* vec = (float*)malloc(16 * sizeof(float));
 	memcpy(vec, data, 16 * sizeof(float));

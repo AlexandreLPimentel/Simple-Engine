@@ -130,6 +130,12 @@ const qtrn qtrn::qMultiply(const qtrn& q0, const qtrn& q1)
 	return q;
 }
 
+const mat4* qtrn::qToMatrix(const qtrn& q) {
+	mat4 * mat = new mat4();
+	qGLMatrix(q, mat);
+	return mat;
+}
+
 const void qtrn::qGLMatrix(const qtrn& q, mat4* matrix)
 {
 	qtrn qn = qNormalize(q);
@@ -179,6 +185,9 @@ const qtrn qtrn::qLerp(const qtrn& q0, const qtrn& q1, float k)
 const qtrn qtrn::qSlerp(const qtrn& q0, const qtrn& q1, float k)
 {
 	float angle = acos(q0.x*q1.x + q0.y*q1.y + q0.z*q1.z + q0.t*q1.t);
+	if (angle == 0.0f ) {
+		return qtrn(1, 0, 0, 0);
+	}
 	float k0 = sin((1 - k)*angle) / sin(angle);
 	float k1 = sin(k*angle) / sin(angle);
 	qtrn qi = qAdd(qMultiply(q0, k0), qMultiply(q1, k1));

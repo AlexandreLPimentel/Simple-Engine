@@ -40,6 +40,7 @@ public:
 	static const bool qEqual(const qtrn& q0, const qtrn& q1);
 	static const void qPrint(const std::string& s, const qtrn& q);
 	static const void qPrintAngleAxis(const std::string& s, const qtrn& q);
+	static const mat4* qToMatrix(const qtrn& q);
 
 };
 
